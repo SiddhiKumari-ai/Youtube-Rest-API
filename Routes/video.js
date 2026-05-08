@@ -190,21 +190,23 @@ Router.post('/dislike/:videoId',async(req,res)=>{
     const token = req.headers.authorization.split(" ")[1]
     const tokenData = await jwt.verify(token,process.env.SEC_KEY)
 
-    const video = await findById(req.params.videoId)
+    const video = await Video.findById(req.params.videoId)
     const isDisliked = video.dislikedBy.includes(tokenData.userId)
 
     if(isDisliked)
     {
-      video.dislikedBy = video.dislikedBy.filter(userId => userId != video.userId) //which means, dislikedBy wale array me un sare userIds ko dalo jo not equal h tokenData k userId se
+      video.dislikedBy = video.dislikedBy.filter(userId => userId != tokenData.userId) //which means, dislikedBy wale array me un sare userIds ko dalo jo not equal h tokenData k userId se
       //filter:- un sb ko rakho jo es condition ko satisfy kre.. means uska userId, tokenData k userId se match nhi kra too usko usi array me rkho, warna hata doo...
       video.dislikesCount -= 1
     }
     else
     {
       video.dislikedBy.push(tokenData.userId)
-      video.disLikesCount += 1
+      video.dislikesCount += 1
     }
 
+
+    const result = await video.save() 
 
     res.status(200).json({
       dislikesCount : video.dislikesCount

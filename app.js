@@ -11,7 +11,6 @@ const fileUpload = require('express-fileupload')
 const connectDB = async()=>{
     try
     {
-        console.log("ALL ENV KEYS:", Object.keys(process.env))
         await mongoose.connect(process.env.MONGODB_URL)
         console.log("Connected with Database...")
         
